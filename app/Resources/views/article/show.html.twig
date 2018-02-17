@@ -5,18 +5,41 @@
 
     <table>
         <tbody>
+        <tr>
+            <th>Id</th>
+            <td>{{ article.id }}</td>
+        </tr>
+        <tr>
+            <th>Titre</th>
+            <td>{{ article.titre }}</td>
+        </tr>
+        <tr>
+            <th>Contenu</th>
+            <td>{{ article.contenu }}</td>
+        </tr>
+        <tr>
+            <th>commentaires</th>
+            <td>
+                {{ form_start(showForm) }}
+                {{ form_widget(showForm) }}
+                {{ form_end(showForm) }}
+            </td>
+        </tr>
+        {% for commentaire in commentaires %}
             <tr>
-                <th>Id</th>
-                <td>{{ article.id }}</td>
+                <th>Date</th>
+                <td>{{  commentaire.date|date('Y-m-d H:i') }}</td>
             </tr>
             <tr>
                 <th>Titre</th>
-                <td>{{ article.titre }}</td>
+                <td>{{ commentaire.titre }}</td>
             </tr>
             <tr>
-                <th>Contenu</th>
-                <td>{{ article.contenu }}</td>
+                <th></th>
+                <td>{{ commentaire.texte }}</td>
             </tr>
+
+        {% endfor %}
         </tbody>
     </table>
 
@@ -29,7 +52,7 @@
         </li>
         <li>
             {{ form_start(delete_form) }}
-                <input type="submit" value="Delete">
+            <input type="submit" value="Delete">
             {{ form_end(delete_form) }}
         </li>
     </ul>

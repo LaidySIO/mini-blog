@@ -42,6 +42,22 @@ class Commentaire
      */
     private $texte;
 
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="date", type="datetime", nullable=false)
+     */
+    private $date;
+
+    /**
+     * @var \AppBundle\Entity\Article
+     *
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Article")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="articleID", referencedColumnName="id")
+     * })
+     */
+    private $articleID;
 
     /**
      * Get id
@@ -121,6 +137,45 @@ class Commentaire
      * @return string
      */
     public function getTexte()
+    {
+        return $this->texte;
+    }
+
+    /**
+     * @return Article
+     */
+    public function getArticleID()
+    {
+        return $this->articleID;
+    }
+
+    /**
+     * @param Article $articleID
+     */
+    public function setArticleID($articleID)
+    {
+        $this->articleID = $articleID;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getDate()
+    {
+        return $this->date;
+    }
+
+    /**
+     * @param \DateTime $date
+     */
+    public function setDate()
+    {
+        $this->date = new \DateTime();
+    }
+
+
+
+    public function __toString()
     {
         return $this->texte;
     }

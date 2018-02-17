@@ -93,5 +93,24 @@ class Article
     {
         return $this->contenu;
     }
+
+    /**
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getComment()
+    {
+        return $this->comment;
+    }
+
+    /**
+     * @param \Doctrine\Common\Collections\Collection $comment
+     */
+    public function setComment($comment)
+    {
+        $this->comment = $comment;
+    }
+
+
+
 }
 

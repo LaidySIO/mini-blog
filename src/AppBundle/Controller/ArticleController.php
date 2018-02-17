@@ -3,9 +3,13 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Entity\Article;
+use AppBundle\Entity\Commentaire;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;use Symfony\Component\HttpFoundation\Request;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Article controller.
@@ -61,16 +65,45 @@ class ArticleController extends Controller
      * Finds and displays a article entity.
      *
      * @Route("/{id}", name="article_show")
-     * @Method("GET")
+     * @Method({"GET", "POST"})
      */
-    public function showAction(Article $article)
+    public function showAction(Article $article, Request $request)
     {
+        $em = $this->getDoctrine()->getManager();
+
         $deleteForm = $this->createDeleteForm($article);
+
+        $commentaire = new Commentaire();
+        $showForm = $this->createForm('AppBundle\Form\CommentaireType', $commentaire);
+        $showForm->handleRequest($request);
+
+        $securityContext = $this->container->get('security.authorization_checker');
+
+        if($showForm->get("add_comment")->isClicked() && $showForm->isSubmitted() &&  $securityContext->isGranted('IS_AUTHENTICATED_FULLY')){
+
+            $commentaire->setAuteur($this->getUser());
+            $commentaire->setArticleID($article);
+            $commentaire->setDate();
+            $em->persist($commentaire);
+            $em->flush();
+        }
+
+        $query = $em->createQuery( //messages
+            'SELECT c
+            FROM AppBundle:Commentaire c
+            WHERE c.articleID = :article
+            ORDER BY c.date ASC'
+        )->setParameter('article', $article->getId());
+
+        $commentaires = $query->getResult();
 
         return $this->render('article/show.html.twig', array(
             'article' => $article,
             'delete_form' => $deleteForm->createView(),
+            'showForm' => $showForm->createView(),
+            'commentaires' => $commentaires,
         ));
+
     }
 
     /**
@@ -90,6 +123,7 @@ class ArticleController extends Controller
 
             return $this->redirectToRoute('article_edit', array('id' => $article->getId()));
         }
+
 
         return $this->render('article/edit.html.twig', array(
             'article' => $article,
