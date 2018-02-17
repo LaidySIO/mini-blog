@@ -74,21 +74,21 @@ class ArticleController extends Controller
         $deleteForm = $this->createDeleteForm($article);
 
         $commentaire = new Commentaire();
-        $showForm = $this->createForm('AppBundle\Form\CommentaireType', $commentaire);
+        $showForm = $this->createForm('AppBundle\Form\CommentaireType', $commentaire); //Formulaire pour création d'un commentaire
         $showForm->handleRequest($request);
 
         $securityContext = $this->container->get('security.authorization_checker');
 
         if($showForm->get("add_comment")->isClicked() && $showForm->isSubmitted() &&  $securityContext->isGranted('IS_AUTHENTICATED_FULLY')){
 
-            $commentaire->setAuteur($this->getUser());
-            $commentaire->setArticleID($article);
-            $commentaire->setDate();
+            $commentaire->setAuteur($this->getUser()); //Init auteur
+            $commentaire->setArticleID($article); // Init article cible
+            $commentaire->setDate(); // init date de commentaire
             $em->persist($commentaire);
             $em->flush();
         }
 
-        $query = $em->createQuery( //messages
+        $query = $em->createQuery( //tableau d'objets des commentaires
             'SELECT c
             FROM AppBundle:Commentaire c
             WHERE c.articleID = :article
